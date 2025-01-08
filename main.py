@@ -4,6 +4,7 @@ import pandas as pd
 from Crypto.Cipher import ChaCha20
 import hashlib
 
+
 def lea_encrypt(data, key):
     return data[::-1]
 
@@ -13,8 +14,10 @@ def chacha20_encrypt(data, key):
 
 def hybrid_encrypt(data, key):
     if len(data) <= 128:
+        print ('LEA is used')
         return lea_encrypt(data, key[:16])  # Use LEA for small data
     else:
+        print ('ChaCha20 is used')
         return chacha20_encrypt(data, key)  # Use ChaCha20 for large data
 
 def encrypt_file(file_path, key):
@@ -31,22 +34,17 @@ def encrypt_file(file_path, key):
 
     return encryption_time, throughput, memory_usage
 
-
-
 def process_files():
-    sizes_kb = [10, 30, 90, 240]
+    files = ['data_25B.txt','data_50B.txt','data_75B.txt','data_100b.txt', 'data_10KB.txt', 'data_30KB.txt', 'data_90KB.txt', 'data_240KB.txt']
 
     key = os.urandom(32)  # Generate a random encryption key
-
     results = []
-
-    for size in sizes_kb:
-        file_path = f"data_{size}KB.txt"
-        encryption_time, throughput, memory_usage = encrypt_file(file_path, key)
+    for file in files:
+        encryption_time, throughput, memory_usage = encrypt_file(file, key)
         results.append({
-            "File Size (KB)": size,
+            "File Name": file,
             "Encryption Time (s)": encryption_time,
-            "Throughput (KB/s)": throughput,
+            "Throughput (Files/s)": throughput,
             "Memory Usage (MB)": memory_usage,
         })
 
